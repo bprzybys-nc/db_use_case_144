@@ -2,20 +2,6 @@
 
 ## Custom MCP Server Flow
 
-### High-Level Workflow Orchestration
-
-```mermaid
-flowchart TD
-    A["MCP Client Request"] --> B["OVR114WorkflowMCPServer"]
-    B --> C["Tool Router"]
-    C --> D["GraphMCP Orchestrator"]
-    D --> E["LangGraph Workflow"]
-    E --> F["Strategy Pattern Execution"]
-    F --> G["MCP Client Calls"]
-    G --> H["Response Aggregation"]
-    H --> I["Formatted Response"]
-    I --> J["MCP Client"]
-```
 
 ### Detailed MCP Server Flow
 
@@ -194,13 +180,16 @@ classDiagram
     GraphMCPOrchestrator --> RunbookMCPClient
 ```
 
+> **Note:** Instead of `SlackMCPClient`, we'll use the implemented Slack client: `<ClientName>`
+> **Note:** Instead of `SlackMCPClient`, we'll use the implemented Slack client: `<ClientName>`
+
 ## Class Diagram for Production
 
 ### Enhanced MCP Server Architecture
 
 ```mermaid
 classDiagram
-    class OVR114ProductionMCPServer {
+    class DbIncidentResolverMCPServer {
         +string name
         +string version
         +GraphMCPOrchestrator orchestrator
@@ -242,7 +231,7 @@ classDiagram
         +bool escalation_triggered
     }
 
-    OVR114ProductionMCPServer --> AdvancedWorkflowOrchestrator
+    DbIncidentResolverMCPServer --> AdvancedWorkflowOrchestrator
     AdvancedWorkflowOrchestrator --> EnhancedWorkflowState
 ```
 
@@ -346,10 +335,10 @@ classDiagram
         +ensure_service_availability()
     }
 
-    OVR114ProductionMCPServer --> AnalyticsService
-    OVR114ProductionMCPServer --> MonitoringService
-    OVR114ProductionMCPServer --> SecurityService
-    OVR114ProductionMCPServer --> HighAvailabilityManager
+    DbIncidentResolverMCPServer --> AnalyticsService
+    DbIncidentResolverMCPServer --> MonitoringService
+    DbIncidentResolverMCPServer --> SecurityService
+    DbIncidentResolverMCPServer --> HighAvailabilityManager
 ```
 
 ### Multi-Client Management
@@ -387,7 +376,7 @@ classDiagram
 
     ClientConfigurationManager --> SLAManager
     ClientConfigurationManager --> PermissionManager
-    OVR114ProductionMCPServer --> ClientConfigurationManager
+    DbIncidentResolverMCPServer --> ClientConfigurationManager
 ```
 
 ## Key Architectural Differences

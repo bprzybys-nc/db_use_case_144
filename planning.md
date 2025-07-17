@@ -34,6 +34,87 @@ flowchart TD
     G --> H["Slack Notify Team"]
 ```
 
+### 3.2 Prototype interfaces
+
+### Core MCP Server Architecture
+
+```mermaid
+classDiagram
+    class DbIncidentResolverMCPServer {
+        +string name
+        +string version
+        +GraphMCPOrchestrator orchestrator
+        +RunbookDiscoveryStrategy runbook_strategy
+        +VectorStorageStrategy vector_strategy
+        +DataPersistenceStrategy persistence_strategy
+        +configure_strategies()
+        +handle_tool_call(tool_name, arguments)
+        +process_incident(jira_key)
+        +search_runbooks(query, client_filter)
+        +handle_runbook_gap(incident_id, gap_analysis)
+    }
+
+    class GraphMCPOrchestrator {
+        +dict clients
+        +StateGraph workflow_graph
+        +execute_workflow(workflow_name, initial_state)
+        +_build_langgraph_workflow()
+        +_fetch_incident_node(state)
+        +_search_runbooks_node(state)
+        +_notify_team_node(state)
+        +_format_results_node(state)
+    }
+
+    class WorkflowState {
+        +string jira_key
+        +dict incident_data
+        +list runbooks
+        +bool gap_detected
+        +dict gap_analysis
+        +string slack_thread
+        +dict client_config
+    }
+
+    DbIncidentResolverMCPServer --> GraphMCPOrchestrator
+    GraphMCPOrchestrator --> WorkflowState
+```
+
+### Strategy Pattern Interfaces
+
+```mermaid
+classDiagram
+    class RunbookDiscoveryStrategy {
+        >
+        +discover_runbooks(spaces)
+        +get_runbook_content(runbook_id)
+        +validate_runbook_content(page)
+        +extract_runbook_metadata(page)
+    }
+
+    class VectorStorageStrategy {
+        >
+        +store_runbook(runbook_id, content, metadata)
+        +search_similar(query, filters)
+        +delete_runbook(runbook_id)
+        +get_embedding_metadata()
+    }
+
+    class DataPersistenceStrategy {
+        >
+        +store_incident(incident_data)
+        +track_runbook_usage(incident_id, runbook_id, score)
+        +get_incident_history(incident_id)
+        +update_effectiveness_metrics(runbook_id, success)
+    }
+
+    class NotificationStrategy {
+        >
+        +send_team_notification(incident_data, runbooks)
+        +send_approval_request(incident_id, proposed_solution)
+        +send_escalation_alert(incident_id, engineer)
+    }
+```
+
 ## 4 | Post-Prototype (User Stories)
 
 | # | Title | Key Extras (beyond prototype) |
