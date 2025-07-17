@@ -3,13 +3,13 @@
 ## 1 | Goal  
 Deliver an AI-assisted system that discovers Confluence runbooks, embeds them for semantic search, and orchestrates an incident workflow through Jira and Slack—first as a **prototype**, then as an **enterprise-grade** solution.
 
-## 2 | Prototype (User Stories & Acceptance)
+# 2 | Prototype (User Stories & Acceptance)
 
-| # | Title | "As a / I want / So that" | Acceptance Highlights |
-|---|-------|---------------------------|-----------------------|
-| P-1 | Basic Workflow Orchestration | MC-DBA engineer ⟶ LangGraph workflow finds runbooks ⟶ I get suggestions instantly | - Jira ticket fetched- Top-3 runbooks returned- - Thread with action links |
-| P-3 | Runbook Gap Detection | Engineer ⟶ know when no runbook fits ⟶ create missing docs | - Gap flagged if relevance - Gap stored for follow-up |
-
+| # | Title | As a / I want / So that | Acceptance Criteria |
+|---|-------|-------------------------|-------------------|
+| **P-1** | Basic Workflow Orchestration | **As a** MC-DBA engineer**I want** LangGraph workflow that finds runbooks automatically**So that** I get suggestions instantly without manual search | -  Jira ticket fetched via MCP-  Top-3 runbooks returned-  End-to-end processing under 30s-  Error handling for MCP failures |
+| **P-2** | Slack Team Notifications | **As a** MC-DBA team member**I want** automated Slack alerts with runbook recommendations**So that** team has rapid incident awareness | -  Message posted to #mc-dba-jira-notifications-  Rich formatting with incident details-  Thread creation for follow-up-  Notification delivery under 5s |
+| **P-3** | Runbook Gap Detection | **As a** MC-DBA engineer**I want** system to detect missing runbooks**So that** I can identify knowledge gaps and create procedures | -  Gap flagged when relevance -  Gap analysis suggests runbook categories-  Incident stored for knowledge improvement-  Team alerted when gaps detected |
 ## 3 | Prototype (Architecture)
 
 | Layer | Strategy Interface | Prototype Implementation | Swap-out Options |
@@ -66,9 +66,15 @@ flowchart TD
 | **Month 2** | - Swap ChromaDB → Weaviate- Add PostgreSQL analytics tables- Real-time runbook webhooks | Prod-1 & Prod-2 |
 | **Month 3** | - Effectiveness reports- HA deployment (Weaviate cluster, PG replication) | Prod-3 & Prod-4 |
 
-## 6 | User Story 1: Basic Workflow Orchestration (Detailed Tasks)
+# 6 | User Story 1: Basic Workflow Orchestration (Detailed Tasks)
 
-### Task Breakdown
+## User Story Definition
+
+**As a** MC-DBA engineer responding to database incidents  
+**I want** a LangGraph workflow that automatically processes incident tickets and finds relevant runbooks  
+**So that** I receive structured runbook recommendations without manual searching  
+
+## Task Breakdown
 
 | Task | Goal | Timeline | Success Metric |
 |------|------|----------|---------------|
@@ -76,21 +82,56 @@ flowchart TD
 | **Task 2** | Incident Fetching & Processing Node | Week 1, Days 3-4 | Fetches incident data from test tickets |
 | **Task 3** | Runbook Search & Results Integration | Week 1, Day 5 - Week 2, Day 1 | Returns top 3 relevant runbooks via ChromaDB |
 | **Task 4** | End-to-End Workflow Execution & Testing | Week 2, Days 2-3 | End-to-end execution  B["WorkflowState Definition"]
+
+
+### Task 1: Workflow Infrastructure Setup
+```mermaid
+flowchart TD
+    A["LangGraph StateGraph"] --> B["WorkflowState Definition"]
     B --> C["GraphMCP Client Init"]
     C --> D["Atlassian MCP Connection"]
     D --> E["Basic START → END Flow"]
 ```
 
 ### Task 3: ChromaDB Integration
-
 ```mermaid
-flowchart LR
+flowchart TD
     A["Incident Data"] --> B["Query Construction(summary + description)"]
     B --> C["ChromaDB Semantic Search"]
     C --> D["Client-Specific Filtering(AAVA/MCDBA spaces)"]
     D --> E["Top 3 Runbooks"]
     E --> F["Format for Jira Comment"]
 ```
+
+## Acceptance Criteria
+
+**Overall User Story Success Metrics**:
+- ✅ LangGraph workflow processes incidents automatically
+- ✅ MCP integration fetches Jira ticket data reliably
+- ✅ Semantic search returns top 3 relevant runbooks
+- ✅ End-to-end execution completes in under 30 seconds
+- ✅ Basic error handling prevents workflow failures
+- ✅ State management maintains context across nodes
+
+## Implementation Stack
+
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| **Workflow Engine** | LangGraph + GraphMCP | Orchestrate incident processing |
+| **Vector Storage** | ChromaDB (local, persistent) | Semantic runbook search |
+| **MCP Integration** | Atlassian MCP Server | Jira operations |
+| **Embeddings** | OpenAI text-embedding-3-large | RAG-compatible vectors |
+| **State Management** | WorkflowState (LangGraph) | Maintain context across nodes |
+
+## Expected Outcome
+
+After completing all 4 tasks, User Story 1 will deliver a working prototype that:
+- Automatically processes Jira incidents from NESMCI, HEMCI, BMC, GROMC projects
+- Searches ChromaDB for relevant runbooks from AAVA/MCDBA Confluence spaces
+- Returns top 3 runbook recommendations with relevance scores
+- Executes end-to-end workflow in under 30 seconds
+- Provides foundation for Slack notifications (User Story 2) and gap detection (User Story 3)
+
 
 ## 7 | Expandability Highlights
 
