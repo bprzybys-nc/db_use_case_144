@@ -23,7 +23,7 @@ Deliver an AI-assisted system that discovers Confluence runbooks, embeds them fo
 ### 3.1 Prototype Workflow (flowchart)
 
 ```mermaid
-flowchart LR
+flowchart TD
     A["Jira Incident Assigned"] --> B["Fetch Incident(Jira MCP)"]
     B --> C["Semantic Search(Runbook MCP)"]
     C --> D{"Runbooks Found?"}
